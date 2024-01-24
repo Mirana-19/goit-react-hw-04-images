@@ -8,19 +8,18 @@ export function Modal({ closeModal, img, onBackdropClick }) {
   };
 
   useEffect(() => {
+    const onEscClick = e => {
+      if (e.code === 'Escape') {
+        closeModal('');
+      }
+    };
+
     window.addEventListener('keydown', onEscClick);
 
     return () => {
       window.removeEventListener('keydown', onEscClick);
     };
-  }, []);
-
-  const onEscClick = e => {
-    console.log(e.code);
-    if (e.code === 'Escape') {
-      closeModal('');
-    }
-  };
+  }, [closeModal]);
 
   return (
     <div onClick={onBackdropClick} className="Backdrop">

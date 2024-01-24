@@ -1,10 +1,18 @@
-import { useEffect, useReducer } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import { getImages } from 'api/gallery';
-import { Searchbar, Button, Loader, Modal, ImageGallery } from 'components';
 import 'react-toastify/dist/ReactToastify.css';
-import { actionType } from 'reducer/actionTypes';
+import { useEffect, useLayoutEffect, useReducer } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import { Searchbar, Button, Loader, Modal, ImageGallery } from 'components';
 import { galleryReducer, initialState } from 'reducer/reducer';
+import { getImages } from 'api/gallery';
+import {
+  closeModal,
+  getImg,
+  getTotal,
+  loadingEnd,
+  nextPage,
+  setLoading,
+  setQuery,
+} from 'reducer/actions';
 
 export function App() {
   const [state, dispatch] = useReducer(galleryReducer, initialState);
@@ -16,7 +24,7 @@ export function App() {
     }
 
     const fetchData = () => {
-      dispatch({ type: actionType.SET_LOADING });
+      dispatch(setLoading());
 
       getImages(query, page)
         .then(({ hits, totalHits }) => {
@@ -24,11 +32,11 @@ export function App() {
             return toast.error('No images found');
           }
 
-          dispatch({ type: actionType.GET_IMAGES, payload: hits });
-          dispatch({ type: actionType.GET_TOTAL, payload: totalHits });
+          dispatch(getImg(hits));
+          dispatch(getTotal(totalHits));
         })
         .catch(() => toast.error('Sorry, something went wrong!'))
-        .finally(() => dispatch({ type: actionType.LOADING_END }));
+        .finally(() => dispatch(loadingEnd()));
     };
 
     fetchData();
@@ -38,15 +46,15 @@ export function App() {
     if (!query.trim()) {
       return toast.info('Please enter your query!');
     }
-    dispatch({ type: actionType.SET_QUERY, payload: query });
+    dispatch(setQuery(query));
   };
 
   const onLoadMore = () => {
-    dispatch({ type: actionType.NEXT_PAGE });
+    dispatch(nextPage());
   };
 
-  const closeModal = str => {
-    dispatch({ type: actionType.SET_IMG_URL, payload: str });
+  const onCloseModal = str => {
+    dispatch(closeModal(str));
   };
 
   const hasMoreImages = images.length < total;
@@ -55,11 +63,11 @@ export function App() {
     <>
       <ToastContainer />
       <Searchbar onFormSubmit={onFormSubmit} />
-      <ImageGallery images={images} onImgClick={closeModal} />
+      <ImageGallery images={images} onImgClick={onCloseModal} />
 
-      {hasMoreImages && <Button onClick={onLoadMore} />}
+      {hasMoreImages ? <Button onClick={onLoadMore} /> : null}
       {isLoading && <Loader />}
-      {largeImgUrl && <Modal img={largeImgUrl} closeModal={closeModal} />}
+      {largeImgUrl && <Modal img={largeImgUrl} closeModal={onCloseModal} />}
     </>
   );
 }
