@@ -1,5 +1,5 @@
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect, useLayoutEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Searchbar, Button, Loader, Modal, ImageGallery } from 'components';
 import { galleryReducer, initialState } from 'reducer/reducer';
