@@ -1,34 +1,32 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 
-export class Modal extends Component {
+export function Modal({ closeModal, img, onBackdropClick }) {
   onBackdropClick = e => {
     if (e.target === e.currentTarget) {
-      this.props.closeModal('');
+      closeModal('');
     }
   };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.onEscClick);
-  }
+  useEffect(() => {
+    window.addEventListener('keydown', onEscClick);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onEscClick);
-  }
+    return () => {
+      window.removeEventListener('keydown', onEscClick);
+    };
+  }, []);
 
-  onEscClick = e => {
+  const onEscClick = e => {
     console.log(e.code);
     if (e.code === 'Escape') {
-      this.props.closeModal('');
+      closeModal('');
     }
   };
 
-  render() {
-    return (
-      <div onClick={this.onBackdropClick} className="Backdrop">
-        <div className="Modal">
-          <img src={this.props.img} alt="" />
-        </div>
+  return (
+    <div onClick={onBackdropClick} className="Backdrop">
+      <div className="Modal">
+        <img src={img} alt="" />
       </div>
-    );
-  }
+    </div>
+  );
 }
