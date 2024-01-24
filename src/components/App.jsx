@@ -42,11 +42,16 @@ export function App() {
     fetchData();
   }, [page, query]);
 
-  const onFormSubmit = query => {
-    if (!query.trim()) {
+  const onFormSubmit = newQuery => {
+    if (!newQuery.trim()) {
       return toast.info('Please enter your query!');
     }
-    dispatch(setQuery(query));
+
+    if (query.toLowerCase() === newQuery.toLowerCase()) {
+      return toast.warning('The request matches the previous one.');
+    }
+
+    dispatch(setQuery(newQuery));
   };
 
   const onLoadMore = () => {
